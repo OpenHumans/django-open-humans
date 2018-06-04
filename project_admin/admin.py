@@ -1,3 +1,0 @@
-"""
-Register your models here.
-"""

@@ -1,18 +1,17 @@
 from datetime import timedelta
+from urllib.parse import urljoin
 
 import arrow
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 import requests
 
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
-OH_API_BASE = OH_BASE_URL + '/api/direct-sharing'
-OH_DELETE_FILES = OH_API_BASE + '/project/files/delete/'
-OH_DIRECT_UPLOAD = OH_API_BASE + '/project/files/upload/direct/'
-OH_DIRECT_UPLOAD_COMPLETE = OH_API_BASE + '/project/files/upload/complete/'
 
 OPPENHUMANS_APP_BASE_URL = settings.OPENHUMANS_APP_BASE_URL
+
+User = get_user_model()
 
 
 def make_unique_username(base):
@@ -35,8 +34,7 @@ def make_unique_username(base):
 
 class OpenHumansMember(models.Model):
     """
-    Store OAuth2 data for Open Humans member.
-    A User account is created for this Open Humans member.
+    Data storage, auth, etc. related to an Open Humans member account.
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     oh_id = models.CharField(max_length=16, primary_key=True, unique=True)
@@ -50,13 +48,17 @@ class OpenHumansMember(models.Model):
         return (arrow.now() + timedelta(seconds=expires_in)).format()
 
     @classmethod
-    def create(cls, oh_id, data):
-        new_username = make_unique_username(
-            base='{}_openhumans'.format(oh_id))
-        new_user = User(username=new_username)
-        new_user.save()
+    def create(cls, oh_id, data, user=None):
+        """
+        Create an Open Humans member, and corresponding User, if not provided.
+        """
+        if not user:
+            new_username = make_unique_username(
+                base='{}_openhumans'.format(oh_id))
+            user = User(username=new_username)
+            user.save()
         oh_member = cls(
-            user=new_user,
+            user=user,
             oh_id=oh_id,
             access_token=data["access_token"],
             refresh_token=data["refresh_token"],
@@ -85,7 +87,7 @@ class OpenHumansMember(models.Model):
         Refresh access token.
         """
         response = requests.post(
-            'https://www.openhumans.org/oauth2/token/',
+            urljoin(OH_BASE_URL, '/oauth2/token/'),
             data={
                 'grant_type': 'refresh_token',
                 'refresh_token': self.refresh_token},

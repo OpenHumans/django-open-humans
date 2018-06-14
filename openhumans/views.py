@@ -14,7 +14,7 @@ def oh_client_info():
     return client_info
 
 
-def delete_file(request, file_id, success_template, not_authorized_template):
+def delete_file(request, file_id, success_template='list', not_authorized_template='index'):
     """
     Delete specified file in Open Humans for this project member.
     """
@@ -22,7 +22,7 @@ def delete_file(request, file_id, success_template, not_authorized_template):
         oh_member = request.user.openhumansmember
         ohapi.api.delete_files(
             project_member_id=oh_member.oh_id,
-            access_token=oh_member.get_access_token(**oh_client_info()),
+            access_token=oh_member.get_access_token(),
             file_id=file_id)
         return redirect(success_template)
     return redirect(not_authorized_template)
@@ -34,5 +34,5 @@ def delete_all_oh_files(oh_member):
     """
     ohapi.api.delete_files(
         project_member_id=oh_member.oh_id,
-        access_token=oh_member.get_access_token(**oh_client_info()),
+        access_token=oh_member.get_access_token(),
         all_files=True)

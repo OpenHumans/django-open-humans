@@ -2,5 +2,5 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^delete/(?P<file_id>\w+)/?$', views.delete_file, name='delete')
+    url(r'^delete/(?P<file_id>\w+)/?$', views.delete_file.as_view(), name='delete')
 ]

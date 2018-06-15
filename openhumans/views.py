@@ -32,7 +32,7 @@ class delete_all_oh_files(View):
 
     def get(self, request):
         """
-        Delete all current project files in Open Humans for this project member.
+        Delete all project files in Open Humans for this project member.
         """
 
         if request.user.is_authenticated and request.user.username != 'admin':

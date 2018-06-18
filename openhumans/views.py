@@ -67,22 +67,28 @@ class upload(View):
     success_url = 'index'
     not_authorized_url = 'main/upload.html'
     def get(self, request):
+        print("start")
         if request.method == 'POST':
             desc = request.POST['file_desc']
             tags = request.POST['file_tags'].split(',')
             filehandle = request.FILES.get('data_file')
             oh_member = request.user.openhumansmember
+            print("ok")
             if filehandle is not None:
+                print("ok1")
                 metadata = {'tags': tags,
                             'description': desc}
+                print("okk1")
                 upload_url = '{}?access_token={}'.format(
                     OH_DIRECT_UPLOAD, oh_member.get_access_token())
+                print("okk2")
                 req1 = requests.post(upload_url,
                                      data={'project_member_id': oh_member.oh_id,
                                            'filename': filehandle.name,
                                            'metadata': json.dumps(metadata)})
-                print("cool")
+                print("okk3")
                 if req1.status_code != 201:
+                    print("okk4")
                     raise HTTPError(upload_url, req1.status_code,
                     'Bad response when starting file upload.', hdrs=None, fp=None)
                     #raise raise_http_error(upload_url, req1,
@@ -90,8 +96,9 @@ class upload(View):
                     print("chu")
 
                 # Upload to S3 target.
-                print("cool1")
+                print("okk5")
                 req2 = requests.put(url=req1.json()['url'], data=filehandle)
+                print("okk6")
                 if req2.status_code != 200:
                     raise HTTPError(req1.json()['url'], req2.status_code,
                     'Bad response when uploading to target.', hdrs=None, fp=None)
@@ -100,24 +107,28 @@ class upload(View):
                     print("chu1")
 
                 # Report completed upload to Open Humans.
-                print("cool2")
+                print("okk7")
                 complete_url = ('{}?access_token={}'.format(
                     OH_DIRECT_UPLOAD_COMPLETE, oh_member.get_access_token()))
+                print("okk8")
                 req3 = requests.post(complete_url,
                                      data={'project_member_id': oh_member.oh_id,
                                            'file_id': req1.json()['id']})
+                print("okk9")
                 if req3.status_code != 200:
                     raise HTTPError(complete_url, req2.status_code,
                     'Bad response when completing upload.', hdrs=None, fp=None)
                     # raise self.raise_http_error(complete_url, req2,
                     #                        'Bad response when completing upload.')
-                    print("chu2")
-            print("chu0")
+                print("okk10")
+                print("ok2")
+            print("ch")
             return redirect(self.success_url)
         else:
-            print("chi")
+            print("ok3")
             if request.user.is_authenticated:
-                print("chuio")
-                return render(request, self.not_authorized_url)
-        print("chu23")
+                print("ok4")
+                return render(request, 'main/upload.html')
+                print("plz")
+        print("ok5")
         return redirect(self.success_url)

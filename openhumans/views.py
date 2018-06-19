@@ -8,7 +8,7 @@ from django.views import View
 
 class list_files(View):
 
-    success_url = 'main/list.html'
+    list_template = 'main/list.html'
     not_authorized_url = 'index'
 
     def get(self, request):
@@ -18,6 +18,6 @@ class list_files(View):
             data = ohapi.api.exchange_oauth2_member(
                         oh_member.get_access_token())
             context = {'files': data['data']}
-            return render(request, self.success_url,
+            return render(request, self.list_template,
                           context=context)
         return redirect(self.not_authorized_url)

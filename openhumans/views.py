@@ -7,7 +7,9 @@ except ImportError:
     from urllib.error import HTTPError
 from django.conf import settings
 from django.shortcuts import redirect, render
-from django.views import View
+from django.views import generic
+from .forms import FileUploadForm
+
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
 OH_API_BASE = OH_BASE_URL + '/api/direct-sharing'
 OH_DIRECT_UPLOAD = OH_API_BASE + '/project/files/upload/direct/'
@@ -16,21 +18,18 @@ OH_DIRECT_UPLOAD_COMPLETE = OH_API_BASE + '/project/files/upload/complete/'
 OH_OAUTH2_REDIRECT_URI = '{}/complete'.format(settings.OPENHUMANS_APP_BASE_URL)
 
 
-class upload(View):
+class upload(generic.FormView):
+    form_class = FileUploadForm
     success_url = 'index'
     not_authorized_url = 'index'
-    upload_template = 'main/upload.html'
-
-    def get(self, request):
-        if request.user.is_authenticated:
-            return render(request, self.upload_template)
-        return redirect(self.not_authorized_url)
+    template_name = 'main/upload.html'
 
     def post(self, request):
         if request.user.is_authenticated:
-            desc = request.POST['file_desc']
-            tags = request.POST['file_tags'].split(',')
-            filehandle = request.FILES.get('data_file')
+            form = self.form_class(request.POST, request.FILES)
+            desc = form.get_description()
+            tags = form.get_tags().split(',')
+            filehandle = form.get_file()
             oh_member = request.user.openhumansmember
             if filehandle is not None:
                 metadata = {'tags': tags,

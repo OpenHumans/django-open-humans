@@ -21,3 +21,9 @@ class DeleteDataFileForm(forms.Form):
     all_files = forms.BooleanField(
         required=False,
         label='All files')
+
+
+class DeleteSingleFileForm(DeleteDataFileForm):
+    file_id = forms.IntegerField(
+        required=True,
+        label='File ID')

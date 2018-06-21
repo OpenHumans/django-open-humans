@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 import requests
+import ohapi
 
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
 
@@ -98,3 +99,15 @@ class OpenHumansMember(models.Model):
             self.refresh_token = data['refresh_token']
             self.token_expires = self.get_expiration(data['expires_in'])
             self.save()
+
+    def delete_single_file(self, file_id):
+        ohapi.api.delete_files(
+            project_member_id=self.oh_id,
+            access_token=self.get_access_token(),
+            file_id=file_id)
+
+    def delete_all_files(self):
+        ohapi.api.delete_files(
+            project_member_id=self.oh_id,
+            access_token=self.get_access_token(),
+            all_files=True)

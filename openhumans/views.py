@@ -1,14 +1,13 @@
 """
 Create your views here.
 """
-from .forms import DeleteDataFileForm, DeleteSingleFileForm
+from .forms import DeleteDataFileForm
 from django.shortcuts import redirect
 from django.views import generic
-import ohapi
 
 
 class DeleteFile(generic.FormView):
-    form_class = DeleteSingleFileForm
+    form_class = DeleteDataFileForm
     next = '/'
     not_authorized_url = '/'
 
@@ -19,7 +18,8 @@ class DeleteFile(generic.FormView):
 
         if request.user.is_authenticated:
             oh_member = request.user.openhumansmember
-            oh_member.delete_single_file(self.form.data['file_id'])
+            form = self.form_class(request.POST, request.FILES)
+            oh_member.delete_single_file(form.data['file_id'])
             return redirect(self.next)
         return redirect(self.not_authorized_url)
 

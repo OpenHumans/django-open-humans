@@ -4,6 +4,7 @@ Create your views here.
 from .forms import DeleteDataFileForm
 from django.shortcuts import redirect
 from django.views import generic
+from django.http import HttpResponse
 
 
 class DeleteFile(generic.FormView):
@@ -19,7 +20,11 @@ class DeleteFile(generic.FormView):
         if request.user.is_authenticated:
             oh_member = request.user.openhumansmember
             form = self.form_class(request.POST, request.FILES)
-            oh_member.delete_single_file(form.data['file_id'])
+            if form.is_valid():
+                oh_member.delete_single_file(form.cleaned_data['file_id'])
+            else:
+                return HttpResponse("The form submitted is not valid. %s" %
+                                    form.errors)
             return redirect(self.next)
         return redirect(self.not_authorized_url)
 

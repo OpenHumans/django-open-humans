@@ -1,45 +1,41 @@
 """
 Create your views here.
 """
-
+from .forms import DeleteDataFileForm
 from django.shortcuts import redirect
-import ohapi
-from django.views import View
+from django.views import generic
 
 
-class delete_file(View):
-    success_url = 'list'
-    not_authorized_url = 'index'
+class DeleteFile(generic.FormView):
+    form_class = DeleteDataFileForm
+    next = '/'
+    not_authorized_url = '/'
 
-    def get(self, request, file_id):
+    def post(self, request):
         """
         Delete specified file in Open Humans for this project member.
         """
 
-        if request.user.is_authenticated and request.user.username != 'admin':
+        if request.user.is_authenticated:
             oh_member = request.user.openhumansmember
-            ohapi.api.delete_files(
-                project_member_id=oh_member.oh_id,
-                access_token=oh_member.get_access_token(),
-                file_id=file_id)
-            return redirect(self.success_url)
+            form = self.form_class(request.POST, request.FILES)
+            oh_member.delete_single_file(form.data['file_id'])
+            return redirect(self.next)
         return redirect(self.not_authorized_url)
 
 
-class delete_all_oh_files(View):
-    success_url = 'list'
-    not_authorized_url = 'index'
+class DeleteAllFiles(generic.FormView):
+    form_class = DeleteDataFileForm
+    next = '/'
+    not_authorized_url = '/'
 
-    def get(self, request):
+    def post(self, request):
         """
         Delete all project files in Open Humans for this project member.
         """
 
-        if request.user.is_authenticated and request.user.username != 'admin':
+        if request.user.is_authenticated:
             oh_member = request.user.openhumansmember
-            ohapi.api.delete_files(
-                project_member_id=oh_member.oh_id,
-                access_token=oh_member.get_access_token(),
-                all_files=True)
-            return redirect(self.success_url)
+            oh_member.delete_all_files()
+            return redirect(self.next)
         return redirect(self.not_authorized_url)

@@ -1,11 +1,11 @@
 from datetime import timedelta
 from urllib.parse import urljoin
-
 import arrow
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 import requests
+import ohapi
 
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
 
@@ -98,3 +98,13 @@ class OpenHumansMember(models.Model):
             self.refresh_token = data['refresh_token']
             self.token_expires = self.get_expiration(data['expires_in'])
             self.save()
+
+    def message(self, subject, message, access_token, all_members=False,
+                project_member_ids=None):
+        """Send messages to project members."""
+        if access_token is "":
+            access_token = self.get_access_token()
+        ohapi.api.message(subject=subject, message=message,
+                          access_token=access_token,
+                          all_members=all_members,
+                          project_member_ids=project_member_ids)

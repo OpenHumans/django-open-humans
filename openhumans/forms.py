@@ -4,6 +4,16 @@ from django import forms
 class MessageProjectMembersForm(forms.Form):
     """A form for validating messages and emailing the members of a project."""
 
+    def clean(self):
+        cleaned_data = super(MessageProjectMembersForm, self).clean()
+        all_members = cleaned_data.get("all_members")
+        project_member_ids = cleaned_data.get("project_member_ids"),
+
+        if all_members and project_member_ids:
+            raise forms.ValidationError('Please fill any one of the fields.')
+
+        return cleaned_data
+
     access_token = forms.CharField(
                     label='Master access token',
                     help_text='link to master acces token',

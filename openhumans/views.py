@@ -31,7 +31,6 @@ class Message(generic.FormView):
                                   form.cleaned_data['all_members'],
                                   form.cleaned_data['project_member_ids'])
             else:
-                form = self.form_class()
-                return render(request, self.message_template, {'form': form}, )
+                return render(request, self.message_template, {'form': form})
             return redirect(self.success_url)
         return redirect(self.not_authorized_url)

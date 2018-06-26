@@ -26,7 +26,8 @@ class Message(generic.FormView):
             form = self.form_class(request.POST)
             if form.is_valid():
                 project_member_ids = form.cleaned_data['project_member_ids']
-                project_member_ids = project_member_ids.split(',')
+                if len(project_member_ids) == 0:
+                    project_member_ids = None
                 oh_member.message(form.cleaned_data['subject'],
                                   form.cleaned_data['message'],
                                   form.cleaned_data['access_token'],

@@ -45,29 +45,21 @@ class MessageProjectMembersForm(forms.Form):
             raise forms.ValidationError('Either all members should be ' +
                                         'selected or project member ids ' +
                                         'should be provided, not both.')
-        if access_token is not "":
+        if access_token:
             if not all_members and not project_member_ids:
                 raise forms.ValidationError('Either all members should be ' +
                                             'selected or project member ids ' +
                                             'should be provided')
-            if len(project_member_ids) < 8:
-                raise forms.ValidationError('Project member id must be ' +
-                                            'eight digits long')
-            if len(project_member_ids) == 8:
-                if not project_member_ids.isdigit():
-                    raise forms.ValidationError('Project member id must be ' +
-                                                'digits')
-            if len(project_member_ids) > 8:
-                if "," not in project_member_ids:
-                    raise forms.ValidationError('Project member ids should ' +
-                                                'be separated by comma')
-                project_member_ids = project_member_ids.replace(', ', ',')
-                project_member_ids = project_member_ids.split(',')
-                for project_member_id in project_member_ids:
-                    if not project_member_id.isdigit():
-                        raise forms.ValidationError('Project member id must ' +
-                                                    'be digits')
-                    if len(project_member_id) != 8:
-                        raise forms.ValidationError('Project member id must ' +
-                                                    'be eight digits long')
+
+            project_member_ids = project_member_ids.split(',')
+            project_member_ids = [pmi.strip() for pmi in project_member_ids
+                                  if pmi.strip()]
+            self.cleaned_data['project_member_ids'] = project_member_ids
+            for project_member_id in project_member_ids:
+                if not project_member_id.isdigit():
+                    raise forms.ValidationError('Project member id must ' +
+                                                'be a number')
+                if len(project_member_id) != 8:
+                    raise forms.ValidationError('Project member id must ' +
+                                                'be eight digits long')
         return cleaned_data

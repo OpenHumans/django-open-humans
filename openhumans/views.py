@@ -25,11 +25,13 @@ class Message(generic.FormView):
             oh_member = request.user.openhumansmember
             form = self.form_class(request.POST)
             if form.is_valid():
+                project_member_ids = form.cleaned_data['project_member_ids']
+                project_member_ids = project_member_ids.split(',')
                 oh_member.message(form.cleaned_data['subject'],
                                   form.cleaned_data['message'],
                                   form.cleaned_data['access_token'],
                                   form.cleaned_data['all_members'],
-                                  form.cleaned_data['project_member_ids'])
+                                  project_member_ids)
             else:
                 return render(request, self.message_template, {'form': form})
             return redirect(self.success_url)

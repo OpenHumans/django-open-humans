@@ -5,9 +5,9 @@ class MessageProjectMembersForm(forms.Form):
     """A form for validating messages and emailing the members of a project."""
 
     access_token = forms.CharField(
-        label='Master access token',
-        help_text='link to master acces token',
-        required=False)
+                    label='Master access token',
+                    help_text='link to master acces token',
+                    required=False)
 
     all_members = forms.BooleanField(
         label='Message all project members?',
@@ -16,7 +16,10 @@ class MessageProjectMembersForm(forms.Form):
     project_member_ids = forms.CharField(
         label='Project member IDs',
         help_text='A comma-separated list of project member IDs.',
-        required=False)
+        # TODO: we could validate one of (all_members, project_member_ids) on
+        # the client-side.
+        required=False,
+        widget=forms.Textarea)
 
     subject = forms.CharField(
         label='Message subject',
@@ -30,7 +33,8 @@ class MessageProjectMembersForm(forms.Form):
         specified above. You may use <code>{{ PROJECT_MEMBER_ID }}</code> in
         your message text and it will be replaced with the project member ID in
         the message sent to the member.""",
-        required=True)
+        required=True,
+        widget=forms.Textarea)
 
     def clean(self):
         cleaned_data = super(MessageProjectMembersForm, self).clean()
@@ -41,9 +45,4 @@ class MessageProjectMembersForm(forms.Form):
             raise forms.ValidationError('Either all members should be selected'
                                         + ' or project member ids should be'
                                         + ' provided, not both.')
-
-        if not all_members and not project_member_ids:
-            raise forms.ValidationError('Either all members should be selected'
-                                        + ' or project member ids should be'
-                                        + ' provided.')
         return cleaned_data

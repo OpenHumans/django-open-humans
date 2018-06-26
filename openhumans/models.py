@@ -1,15 +1,24 @@
 from datetime import timedelta
 from urllib.parse import urljoin
+try:
+    from urllib2 import HTTPError
+except ImportError:
+    from urllib.error import HTTPError
 
 import arrow
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 import requests
+import json
 
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
-
 OPPENHUMANS_APP_BASE_URL = settings.OPENHUMANS_APP_BASE_URL
+OH_API_BASE = OH_BASE_URL + '/api/direct-sharing'
+OH_DIRECT_UPLOAD = OH_API_BASE + '/project/files/upload/direct/'
+OH_DIRECT_UPLOAD_COMPLETE = OH_API_BASE + '/project/files/upload/complete/'
+
+OH_OAUTH2_REDIRECT_URI = '{}/complete'.format(settings.OPENHUMANS_APP_BASE_URL)
 
 User = get_user_model()
 
@@ -98,3 +107,36 @@ class OpenHumansMember(models.Model):
             self.refresh_token = data['refresh_token']
             self.token_expires = self.get_expiration(data['expires_in'])
             self.save()
+
+    def upload(self, description, tags, filehandle):
+        if filehandle is not None:
+            metadata = {'tags': tags,
+                        'description': description}
+            upload_url = '{}?access_token={}'.format(
+                OH_DIRECT_UPLOAD, self.get_access_token())
+            req1 = requests.post(upload_url,
+                                 data={'project_member_id': self.oh_id,
+                                       'filename': filehandle.name,
+                                       'metadata': json.dumps(metadata)})
+            if req1.status_code != 201:
+                raise HTTPError(upload_url, req1.status_code,
+                                'Bad response when starting file upload.',
+                                hdrs=None, fp=None)
+
+            # Upload to S3 target.
+            req2 = requests.put(url=req1.json()['url'], data=filehandle)
+            if req2.status_code != 200:
+                raise HTTPError(req1.json()['url'], req2.status_code,
+                                'Bad response when uploading to target.',
+                                hdrs=None, fp=None)
+
+            # Report completed upload to Open Humans.
+            complete_url = ('{}?access_token={}'.format(
+                OH_DIRECT_UPLOAD_COMPLETE, self.get_access_token()))
+            req3 = requests.post(complete_url,
+                                 data={'project_member_id': self.oh_id,
+                                       'file_id': req1.json()['id']})
+            if req3.status_code != 200:
+                raise HTTPError(complete_url, req2.status_code,
+                                'Bad response when completing upload.',
+                                hdrs=None, fp=None)

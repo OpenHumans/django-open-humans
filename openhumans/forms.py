@@ -40,9 +40,34 @@ class MessageProjectMembersForm(forms.Form):
         cleaned_data = super(MessageProjectMembersForm, self).clean()
         all_members = cleaned_data.get("all_members")
         project_member_ids = cleaned_data.get("project_member_ids")
-
+        access_token = cleaned_data.get("access_token")
         if all_members and project_member_ids:
-            raise forms.ValidationError('Either all members should be selected'
-                                        + ' or project member ids should be'
-                                        + ' provided, not both.')
+            raise forms.ValidationError('Either all members should be ' +
+                                        'selected or project member ids ' +
+                                        'should be provided, not both.')
+        if access_token is not "":
+            if not all_members and not project_member_ids:
+                raise forms.ValidationError('Either all members should be ' +
+                                            'selected or project member ids ' +
+                                            'should be provided')
+            if len(project_member_ids) < 8:
+                raise forms.ValidationError('Project member id must be ' +
+                                            'eight digits long')
+            if len(project_member_ids) == 8:
+                if not project_member_ids.isdigit():
+                    raise forms.ValidationError('Project member id must be ' +
+                                                'digits')
+            if len(project_member_ids) > 8:
+                if "," not in project_member_ids:
+                    raise forms.ValidationError('Project member ids should ' +
+                                                'be separated by comma')
+                project_member_ids = project_member_ids.replace(', ', ',')
+                project_member_ids = project_member_ids.split(',')
+                for project_member_id in project_member_ids:
+                    if not project_member_id.isdigit():
+                        raise forms.ValidationError('Project member id must ' +
+                                                    'be digits')
+                    if len(project_member_id) != 8:
+                        raise forms.ValidationError('Project member id must ' +
+                                                    'be eight digits long')
         return cleaned_data

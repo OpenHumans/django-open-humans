@@ -16,8 +16,6 @@ class MessageProjectMembersForm(forms.Form):
     project_member_ids = forms.CharField(
         label='Project member IDs',
         help_text='A comma-separated list of project member IDs.',
-        # TODO: we could validate one of (all_members, project_member_ids) on
-        # the client-side.
         required=False,
         widget=forms.Textarea)
 

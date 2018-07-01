@@ -96,6 +96,6 @@ class OpenHumansMember(models.Model):
             self.save()
 
     def message(self, subject, message):
-        """Send messages ."""
+        """Send messages."""
         ohapi.api.message(subject=subject, message=message,
                           access_token=self.get_access_token())

@@ -72,9 +72,7 @@ class OpenHumansMember(models.Model):
     def get_access_token(self,
                          client_id=settings.OPENHUMANS_CLIENT_ID,
                          client_secret=settings.OPENHUMANS_CLIENT_SECRET):
-        """
-        Return access token. Refresh first if necessary.
-        """
+        """Return access token. Refresh first if necessary."""
         # Also refresh if nearly expired (less than 60s remaining).
         delta = timedelta(seconds=60)
         if arrow.get(self.token_expires) - delta < arrow.now():
@@ -83,9 +81,7 @@ class OpenHumansMember(models.Model):
         return self.access_token
 
     def _refresh_tokens(self, client_id, client_secret):
-        """
-        Refresh access token.
-        """
+        """Refresh access token."""
         response = requests.post(
             urljoin(OH_BASE_URL, '/oauth2/token/'),
             data={
@@ -99,12 +95,7 @@ class OpenHumansMember(models.Model):
             self.token_expires = self.get_expiration(data['expires_in'])
             self.save()
 
-    def message(self, subject, message, access_token, all_members=False,
-                project_member_ids=None):
-        """Send messages to project members."""
-        if access_token is "":
-            access_token = self.get_access_token()
+    def message(self, subject, message):
+        """Send messages ."""
         ohapi.api.message(subject=subject, message=message,
-                          access_token=access_token,
-                          all_members=all_members,
-                          project_member_ids=project_member_ids)
+                          access_token=self.get_access_token())

@@ -1,46 +1,33 @@
 """
 Create your views here.
 """
-from .forms import DeleteDataFileForm
+from django.views import View
 from django.shortcuts import redirect
-from django.views import generic
-from django.http import HttpResponse
 
 
-class DeleteFile(generic.FormView):
-    form_class = DeleteDataFileForm
-    next = '/'
-    not_authorized_url = '/'
+class DeleteFile(View):
 
-    def post(self, request):
+    def post(self, request, file_id, next='/'):
         """
         Delete specified file in Open Humans for this project member.
         """
-
         if request.user.is_authenticated:
             oh_member = request.user.openhumansmember
-            form = self.form_class(request.POST, request.FILES)
-            if form.is_valid():
-                oh_member.delete_single_file(form.cleaned_data['file_id'])
-            else:
-                return HttpResponse("The form submitted is not valid. %s" %
-                                    form.errors)
-            return redirect(self.next)
-        return redirect(self.not_authorized_url)
+            oh_member = request.user.openhumansmember
+            oh_member.delete_single_file(
+                file_id=file_id)
+            return redirect(next)
+        return redirect(next)
 
 
-class DeleteAllFiles(generic.FormView):
-    form_class = DeleteDataFileForm
-    next = '/'
-    not_authorized_url = '/'
+class DeleteAllFiles(View):
 
-    def post(self, request):
+    def post(self, request, next='/'):
         """
         Delete all project files in Open Humans for this project member.
         """
-
         if request.user.is_authenticated:
             oh_member = request.user.openhumansmember
             oh_member.delete_all_files()
-            return redirect(self.next)
-        return redirect(self.not_authorized_url)
+            return redirect(next)
+        return redirect(next)

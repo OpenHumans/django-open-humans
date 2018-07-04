@@ -1,6 +1,5 @@
 from datetime import timedelta
 from urllib.parse import urljoin
-
 import arrow
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -73,9 +72,7 @@ class OpenHumansMember(models.Model):
     def get_access_token(self,
                          client_id=settings.OPENHUMANS_CLIENT_ID,
                          client_secret=settings.OPENHUMANS_CLIENT_SECRET):
-        """
-        Return access token. Refresh first if necessary.
-        """
+        """Return access token. Refresh first if necessary."""
         # Also refresh if nearly expired (less than 60s remaining).
         delta = timedelta(seconds=60)
         if arrow.get(self.token_expires) - delta < arrow.now():
@@ -84,9 +81,7 @@ class OpenHumansMember(models.Model):
         return self.access_token
 
     def _refresh_tokens(self, client_id, client_secret):
-        """
-        Refresh access token.
-        """
+        """Refresh access token."""
         response = requests.post(
             urljoin(OH_BASE_URL, '/oauth2/token/'),
             data={
@@ -111,3 +106,8 @@ class OpenHumansMember(models.Model):
             project_member_id=self.oh_id,
             access_token=self.get_access_token(),
             all_files=True)
+
+    def message(self, subject, message):
+        """Send messages."""
+        ohapi.api.message(subject=subject, message=message,
+                          access_token=self.get_access_token())

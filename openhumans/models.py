@@ -96,7 +96,8 @@ class OpenHumansMember(models.Model):
             self.save()
 
     def delete_single_file(self, file_id, file_basename):
-        """Deletes a specific file. Specify file_id or file_basename but not both """
+        """Deletes a file.
+           Specify file_id or file_basename but not both """
         ohapi.api.delete_files(
             project_member_id=self.oh_id,
             access_token=self.get_access_token(),

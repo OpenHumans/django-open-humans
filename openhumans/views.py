@@ -18,7 +18,7 @@ class DeleteFile(View):
             if "file_id" in request.POST:
                 file_id = request.POST["file_id"]
                 oh_member.delete_single_file(file_id=file_id)
-            if "file_basename" in request.POST:
+            elif "file_basename" in request.POST:
                 file_basename = request.POST["file_basename"]
                 oh_member.delete_single_file(file_basename=file_basename)
             next = request.POST["next"]

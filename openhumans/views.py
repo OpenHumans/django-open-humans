@@ -33,7 +33,7 @@ class DeleteAllFiles(View):
         Delete all project files in Open Humans for this project member.
         """
         if request.user.is_authenticated:
-            next = request.POST["nex"]
+            next = request.POST["next"]
             oh_member = request.user.openhumansmember
             oh_member.delete_all_files()
             return redirect(next)

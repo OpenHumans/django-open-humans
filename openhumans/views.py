@@ -15,8 +15,7 @@ class list_files(View):
         """List files."""
         if request.user.is_authenticated:
             oh_member = request.user.openhumansmember
-            data = ohapi.api.exchange_oauth2_member(
-                        oh_member.get_access_token())
+            data = oh_member.list_files()
             context = {'files': data['data']}
             return render(request, self.list_template,
                           context=context)

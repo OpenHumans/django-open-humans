@@ -99,3 +99,8 @@ class OpenHumansMember(models.Model):
         """Send messages."""
         ohapi.api.message(subject=subject, message=message,
                           access_token=self.get_access_token())
+
+    def list_files(self):
+        """List files."""
+        return ohapi.api.exchange_oauth2_member(
+                                    access_token=self.get_access_token())

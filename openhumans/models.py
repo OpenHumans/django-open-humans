@@ -95,7 +95,7 @@ class OpenHumansMember(models.Model):
             self.token_expires = self.get_expiration(data['expires_in'])
             self.save()
 
-    def delete_single_file(self, file_id, file_basename):
+    def delete_single_file(self, file_id=None, file_basename=None):
         """Deletes a file.
            Specify file_id or file_basename but not both """
         ohapi.api.delete_files(

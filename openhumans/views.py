@@ -17,14 +17,13 @@ class DeleteFile(View):
             file_basename = None
             if "file_id" in request.POST:
                 file_id = request.POST["file_id"]
+                oh_member.delete_single_file(file_id=file_id)
             if "file_basename" in request.POST:
                 file_basename = request.POST["file_basename"]
-            next_url = request.POST["next_url"]
-            oh_member.delete_single_file(
-                file_id=file_id,
-                file_basename=file_basename)
-            return redirect(next_url)
-        return redirect(next_url)
+                oh_member.delete_single_file(file_basename=file_basename)
+            next = request.POST["next"]
+            return redirect(next)
+        return redirect(next)
 
 
 class DeleteAllFiles(View):
@@ -34,8 +33,8 @@ class DeleteAllFiles(View):
         Delete all project files in Open Humans for this project member.
         """
         if request.user.is_authenticated:
-            next_url = request.POST["next_url"]
+            next = request.POST["nex"]
             oh_member = request.user.openhumansmember
             oh_member.delete_all_files()
-            return redirect(next_url)
-        return redirect(next_url)
+            return redirect(next)
+        return redirect(next)

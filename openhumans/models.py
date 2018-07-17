@@ -102,5 +102,7 @@ class OpenHumansMember(models.Model):
 
     def list_files(self):
         """List files."""
-        return ohapi.api.exchange_oauth2_member(
+        data = ohapi.api.exchange_oauth2_member(
                                     access_token=self.get_access_token())
+        context = {'files': data['data']}
+        return context

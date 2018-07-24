@@ -99,3 +99,10 @@ class OpenHumansMember(models.Model):
         """Send messages."""
         ohapi.api.message(subject=subject, message=message,
                           access_token=self.get_access_token())
+
+    def upload(self, stream, filename, metadata, file_identifier=None):
+        """Upload file to Open Humans."""
+        ohapi.api.upload_stream(stream=stream, filename=filename,
+                                metadata=metadata,
+                                access_token=self.get_access_token(),
+                                file_identifier=file_identifier)

@@ -11,7 +11,7 @@ def readme():
 
 # Add backport of futures unless Python version is 3.2 or later.
 install_requires = [
-    'open-humans-api>=0.2.2 ',
+    'open-humans-api>=0.2.3 ',
 ]
 if sys.version_info < (3, 5):
     raise RuntimeError("This package requres Python 3.5+")

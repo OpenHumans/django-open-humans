@@ -14,7 +14,7 @@ class list_files(View):
         """List files."""
         if request.user.is_authenticated:
             oh_member = request.user.openhumansmember
-            context = oh_member.list_files()
+            context = {'files': oh_member.list_files()}
             return render(request, self.list_template,
                           context=context)
         return redirect(self.not_authorized_url)

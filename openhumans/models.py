@@ -105,3 +105,10 @@ class OpenHumansMember(models.Model):
         data = ohapi.api.exchange_oauth2_member(
                                     access_token=self.get_access_token())
         return data['data']
+
+    def upload(self, stream, filename, metadata, file_identifier=None):
+        """Upload file to Open Humans."""
+        ohapi.api.upload_stream(stream=stream, filename=filename,
+                                metadata=metadata,
+                                access_token=self.get_access_token(),
+                                file_identifier=file_identifier)

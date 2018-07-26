@@ -17,10 +17,10 @@ class DeleteFile(View):
             file_basename = None
             if "file_id" in request.POST:
                 file_id = request.POST["file_id"]
-                oh_member.delete_single_file(file_id=file_id)
-            elif "file_basename" in request.POST:
+            if "file_basename" in request.POST:
                 file_basename = request.POST["file_basename"]
-                oh_member.delete_single_file(file_basename=file_basename)
+            oh_member.delete_single_file(file_id=file_id,
+                                         file_basename=file_basename)
             next = request.POST["next"]
             return redirect(next)
         return redirect(next)

@@ -3,10 +3,15 @@ from urllib.parse import urljoin
 import arrow
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
 import requests
 import ohapi
 
+try:
+    from urllib2 import HTTPError
+except ImportError:
+    from urllib.error import HTTPError
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
 
 OPPENHUMANS_APP_BASE_URL = settings.OPENHUMANS_APP_BASE_URL
@@ -94,6 +99,28 @@ class OpenHumansMember(models.Model):
             self.refresh_token = data['refresh_token']
             self.token_expires = self.get_expiration(data['expires_in'])
             self.save()
+
+    def delete_single_file(self, file_id=None, file_basename=None):
+        """Deletes a file.
+           Specify file_id or file_basename but not both """
+        if(file_id and file_basename):
+            raise ValidationError("Only one of the following must be " +
+                                  "specified file_id or file_basename not both"
+                                  )
+        if(not file_id and not file_basename):
+            raise ValidationError("Either file_id or file_basename must be " +
+                                  "specified")
+        ohapi.api.delete_files(
+            project_member_id=self.oh_id,
+            access_token=self.get_access_token(),
+            file_id=file_id,
+            file_basename=file_basename)
+
+    def delete_all_files(self):
+        ohapi.api.delete_files(
+            project_member_id=self.oh_id,
+            access_token=self.get_access_token(),
+            all_files=True)
 
     def message(self, subject, message):
         """Send messages."""

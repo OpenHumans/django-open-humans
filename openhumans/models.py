@@ -11,6 +11,8 @@ OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
 
 OPPENHUMANS_APP_BASE_URL = settings.OPENHUMANS_APP_BASE_URL
 
+OH_OAUTH2_REDIRECT_URI = '{}/complete'.format(settings.OPENHUMANS_APP_BASE_URL)
+
 User = get_user_model()
 
 
@@ -46,6 +48,17 @@ class OpenHumansMember(models.Model):
     @staticmethod
     def get_expiration(expires_in):
         return (arrow.now() + timedelta(seconds=expires_in)).format()
+
+    @staticmethod
+    def get_auth_url():
+        """Gets the authentication url."""
+        if settings.OPENHUMANS_CLIENT_ID and settings.OPENHUMANS_REDIRECT_URI:
+            auth_url = ohapi.api.oauth2_auth_url(
+                client_id=settings.OPENHUMANS_CLIENT_ID,
+                redirect_uri=settings.OPENHUMANS_REDIRECT_URI)
+        else:
+            auth_url = ''
+        return auth_url
 
     @classmethod
     def create(cls, oh_id, data, user=None):

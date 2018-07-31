@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 import arrow
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
 import requests
 import ohapi
@@ -112,3 +113,28 @@ class OpenHumansMember(models.Model):
                                 metadata=metadata,
                                 access_token=self.get_access_token(),
                                 file_identifier=file_identifier)
+
+    def delete_single_file(self, file_id=None, file_basename=None):
+        """
+        Deletes a file.
+
+        Specify file_id or file_basename but not both.
+        """
+        if(file_id and file_basename):
+            raise ValidationError("Only one of the following must be " +
+                                  "specified file_id or file_basename not both"
+                                  )
+        if(not file_id and not file_basename):
+            raise ValidationError("Either file_id or file_basename must be " +
+                                  "specified")
+        ohapi.api.delete_files(
+            project_member_id=self.oh_id,
+            access_token=self.get_access_token(),
+            file_id=file_id,
+            file_basename=file_basename)
+
+    def delete_all_files(self):
+        ohapi.api.delete_files(
+            project_member_id=self.oh_id,
+            access_token=self.get_access_token(),
+            all_files=True)

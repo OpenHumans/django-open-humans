@@ -2,7 +2,7 @@
 Create your views here.
 """
 from django.views import View
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 
 
 class DeleteFile(View):
@@ -38,3 +38,18 @@ class DeleteAllFiles(View):
             oh_member.delete_all_files()
             return redirect(next)
         return redirect(next)
+
+
+class list_files(View):
+
+    list_template = 'main/list.html'
+    not_authorized_url = 'index'
+
+    def get(self, request):
+        """List files."""
+        if request.user.is_authenticated:
+            oh_member = request.user.openhumansmember
+            context = {'files': oh_member.list_files()}
+            return render(request, self.list_template,
+                          context=context)
+        return redirect(self.not_authorized_url)

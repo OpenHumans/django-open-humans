@@ -8,10 +8,6 @@ from django.db import models
 import requests
 import ohapi
 
-try:
-    from urllib2 import HTTPError
-except ImportError:
-    from urllib.error import HTTPError
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
 
 OPPENHUMANS_APP_BASE_URL = settings.OPENHUMANS_APP_BASE_URL
@@ -100,9 +96,30 @@ class OpenHumansMember(models.Model):
             self.token_expires = self.get_expiration(data['expires_in'])
             self.save()
 
+    def message(self, subject, message):
+        """Send messages."""
+        ohapi.api.message(subject=subject, message=message,
+                          access_token=self.get_access_token())
+
+    def list_files(self):
+        """List files."""
+        data = ohapi.api.exchange_oauth2_member(
+                                    access_token=self.get_access_token())
+        return data['data']
+
+    def upload(self, stream, filename, metadata, file_identifier=None):
+        """Upload file to Open Humans."""
+        ohapi.api.upload_stream(stream=stream, filename=filename,
+                                metadata=metadata,
+                                access_token=self.get_access_token(),
+                                file_identifier=file_identifier)
+
     def delete_single_file(self, file_id=None, file_basename=None):
-        """Deletes a file.
-           Specify file_id or file_basename but not both """
+        """
+        Deletes a file.
+
+        Specify file_id or file_basename but not both.
+        """
         if(file_id and file_basename):
             raise ValidationError("Only one of the following must be " +
                                   "specified file_id or file_basename not both"
@@ -121,15 +138,3 @@ class OpenHumansMember(models.Model):
             project_member_id=self.oh_id,
             access_token=self.get_access_token(),
             all_files=True)
-
-    def message(self, subject, message):
-        """Send messages."""
-        ohapi.api.message(subject=subject, message=message,
-                          access_token=self.get_access_token())
-
-    def upload(self, stream, filename, metadata, file_identifier=None):
-        """Upload file to Open Humans."""
-        ohapi.api.upload_stream(stream=stream, filename=filename,
-                                metadata=metadata,
-                                access_token=self.get_access_token(),
-                                file_identifier=file_identifier)

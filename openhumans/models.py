@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 import requests
 import ohapi
+from django.urls import reverse
 
 OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
 
@@ -47,6 +48,17 @@ class OpenHumansMember(models.Model):
     @staticmethod
     def get_expiration(expires_in):
         return (arrow.now() + timedelta(seconds=expires_in)).format()
+
+    @staticmethod
+    def get_auth_url():
+        """Gets the authentication url."""
+        if settings.OPENHUMANS_CLIENT_ID:
+            auth_url = ohapi.api.oauth2_auth_url(
+                client_id=settings.OPENHUMANS_CLIENT_ID,
+                redirect_uri=OPPENHUMANS_APP_BASE_URL + reverse("openhumans:complete"))
+        else:
+            auth_url = ''
+        return auth_url
 
     @classmethod
     def create(cls, oh_id, data, user=None):

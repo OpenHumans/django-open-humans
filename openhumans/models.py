@@ -56,7 +56,7 @@ class OpenHumansMember(models.Model):
             auth_url = ohapi.api.oauth2_auth_url(
                 client_id=settings.OPENHUMANS_CLIENT_ID,
                 redirect_uri=OPPENHUMANS_APP_BASE_URL +
-                             reverse("openhumans:complete"))
+                reverse("openhumans:complete"))
         else:
             auth_url = ''
         return auth_url

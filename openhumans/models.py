@@ -9,9 +9,9 @@ import requests
 import ohapi
 from django.urls import reverse
 
-OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
+from .settings import openhumans_settings
 
-OPPENHUMANS_APP_BASE_URL = settings.OPENHUMANS_APP_BASE_URL
+OH_BASE_URL = openhumans_settings['OPENHUMANS_OH_BASE_URL']
 
 User = get_user_model()
 

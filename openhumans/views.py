@@ -1,18 +1,21 @@
-from django.conf import settings
+from urllib.parse import urljoin
+
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
-from .helpers import oh_code_to_member
 from django.views import View
-from django.shortcuts import render, redirect
 
-OH_BASE_URL = settings.OPENHUMANS_OH_BASE_URL
-OH_API_BASE = OH_BASE_URL + '/api/direct-sharing'
+
+from .models import OpenHumansMember
+from .settings import openhumans_settings
+
+OPENHUMANS_OH_BASE_URL = openhumans_settings['OPENHUMANS_OH_BASE_URL']
+OH_API_BASE = urljoin(OPENHUMANS_OH_BASE_URL, '/api/direct-sharing')
 
 
 def login_member(request):
     code = request.GET.get('code', '')
     try:
-        oh_member = oh_code_to_member(code=code)
+        oh_member = OpenHumansMember.oh_code_to_member(code=code)
     except Exception:
         oh_member = None
     if oh_member:
@@ -30,11 +33,10 @@ def complete(request):
 
     login_member(request)
     if not request.user.is_authenticated:
-        # logger.debug('Invalid code exchange. User returned to start page.')
-        print('Invalid code exchange. User returned to start page.')
-        return redirect('/')
+        return redirect(openhumans_settings['OPENHUMANS_LOGOUT_REDIRECT_URL'])
     else:
-        return redirect('overview')
+        return redirect(openhumans_settings['OPENHUMANS_LOGIN_REDIRECT_URL'])
+
 
 class DeleteFile(View):
 

@@ -69,6 +69,11 @@ class OpenHumansMember(models.Model):
     def create(cls, oh_id, data, user=None):
         """
         Create an Open Humans member, and corresponding User, if not provided.
+
+        :param oh_id: This field is the Openhumans id.
+        :param data: This field contain data related to access token and
+            refresh token.
+        :param user: This field's default value is None.
         """
         if not user:
             new_username = make_unique_username(
@@ -138,7 +143,16 @@ class OpenHumansMember(models.Model):
     def get_access_token(self,
                          client_id=OPENHUMANS_CLIENT_ID,
                          client_secret=OPENHUMANS_CLIENT_SECRET):
-        """Return access token. Refresh first if necessary."""
+        """
+        Return access token. Refresh first if necessary.
+
+        :param client_id: This field is the client_id of the project. Project
+            info can be found at
+            https://www.openhumans.org/direct-sharing/projects/manage/
+        :param client_secret: This field is the client secret of the project.
+            Project info can be found at
+            https://www.openhumans.org/direct-sharing/projects/manage/
+        """
         # Also refresh if nearly expired (less than 60s remaining).
         delta = timedelta(seconds=60)
         if arrow.get(self.token_expires) - delta < arrow.now():
@@ -147,7 +161,16 @@ class OpenHumansMember(models.Model):
         return self.access_token
 
     def _refresh_tokens(self, client_id, client_secret):
-        """Refresh access token."""
+        """
+        Refresh access token.
+
+        :param client_id: This field is the client_id of the project. Project
+            info can be found at
+            https://www.openhumans.org/direct-sharing/projects/manage/
+        :param client_secret: This field is the client secret of the project.
+            Project info can be found at
+            https://www.openhumans.org/direct-sharing/projects/manage/
+        """
         response = requests.post(
             urljoin(OPENHUMANS_OH_BASE_URL, '/oauth2/token/'),
             data={
@@ -162,7 +185,12 @@ class OpenHumansMember(models.Model):
             self.save()
 
     def message(self, subject, message):
-        """Send messages."""
+        """
+        Send messages.
+
+        :param subject: This field is the subject of the message.
+        :param message: This field is the message which is to be send.
+        """
         ohapi.api.message(subject=subject, message=message,
                           access_token=self.get_access_token())
 
@@ -181,9 +209,11 @@ class OpenHumansMember(models.Model):
 
     def delete_single_file(self, file_id=None, file_basename=None):
         """
-        Deletes a file.
+        Deletes a file. Specify file_id or file_basename but not both.
 
-        Specify file_id or file_basename but not both.
+        :param file_id: This field is the file id of the file to be deleted.
+        :param file_basename: This field is the file basename of the file to
+            be deleted. It's default value is None.
         """
         if(file_id and file_basename):
             raise ValidationError("Only one of the following must be " +

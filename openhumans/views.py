@@ -1,9 +1,9 @@
 from urllib.parse import urljoin
 
+from django.conf import settings
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
 from django.views import View
-
 
 from .models import OpenHumansMember
 from .settings import openhumans_settings
@@ -16,7 +16,9 @@ def login_member(request):
     code = request.GET.get('code', '')
     try:
         oh_member = OpenHumansMember.oh_code_to_member(code=code)
-    except Exception:
+    except Exception as error:
+        if settings.DEBUG:
+            raise error
         oh_member = None
     if oh_member:
         # Log in the user.

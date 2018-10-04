@@ -1,5 +1,41 @@
+from urllib.parse import urljoin
+
+from django.contrib.auth import login
+from django.shortcuts import redirect, render
 from django.views import View
-from django.shortcuts import render, redirect
+
+
+from .models import OpenHumansMember
+from .settings import openhumans_settings
+
+OPENHUMANS_OH_BASE_URL = openhumans_settings['OPENHUMANS_OH_BASE_URL']
+OH_API_BASE = urljoin(OPENHUMANS_OH_BASE_URL, '/api/direct-sharing')
+
+
+def login_member(request):
+    code = request.GET.get('code', '')
+    try:
+        oh_member = OpenHumansMember.oh_code_to_member(code=code)
+    except Exception:
+        oh_member = None
+    if oh_member:
+        # Log in the user.
+        user = oh_member.user
+        login(request, user,
+              backend='django.contrib.auth.backends.ModelBackend')
+
+
+def complete(request):
+    """
+    Receive user from Open Humans. Store data, start data upload task.
+    """
+    # logger.debug("Received user returning from Open Humans.")
+
+    login_member(request)
+    if not request.user.is_authenticated:
+        return redirect(openhumans_settings['OPENHUMANS_LOGOUT_REDIRECT_URL'])
+    else:
+        return redirect(openhumans_settings['OPENHUMANS_LOGIN_REDIRECT_URL'])
 
 
 class DeleteFile(View):

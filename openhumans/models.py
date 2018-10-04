@@ -1,17 +1,23 @@
 from datetime import timedelta
+import logging
 from urllib.parse import urljoin
+
 import arrow
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 import requests
 import ohapi
 
+from .exceptions import OpenHumansAPIResponseError
+from .helpers import get_redirect_uri
 from .settings import openhumans_settings
 
-OH_BASE_URL = openhumans_settings['OPENHUMANS_OH_BASE_URL']
+OPENHUMANS_OH_BASE_URL = openhumans_settings['OPENHUMANS_OH_BASE_URL']
+OPENHUMANS_CLIENT_ID = openhumans_settings['OPENHUMANS_CLIENT_ID']
+OPENHUMANS_CLIENT_SECRET = openhumans_settings['OPENHUMANS_CLIENT_SECRET']
 
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
@@ -48,6 +54,17 @@ class OpenHumansMember(models.Model):
     def get_expiration(expires_in):
         return (arrow.now() + timedelta(seconds=expires_in)).format()
 
+    @staticmethod
+    def get_auth_url():
+        """Gets the authentication url."""
+        if OPENHUMANS_CLIENT_ID:
+            auth_url = ohapi.api.oauth2_auth_url(
+                client_id=OPENHUMANS_CLIENT_ID,
+                redirect_uri=get_redirect_uri())
+        else:
+            auth_url = ''
+        return auth_url
+
     @classmethod
     def create(cls, oh_id, data, user=None):
         """
@@ -71,13 +88,61 @@ class OpenHumansMember(models.Model):
             token_expires=cls.get_expiration(data["expires_in"]))
         return oh_member
 
+    @classmethod
+    def get_create_member(cls, data):
+        '''
+        use the data returned by `ohapi.api.oauth2_token_exchange`
+        and return an oh_member object
+        '''
+        oh_id = ohapi.api.exchange_oauth2_member(
+            access_token=data['access_token'])['project_member_id']
+        try:
+            oh_member = cls.objects.get(oh_id=oh_id)
+            logger.debug('Member {} re-authorized.'.format(oh_id))
+            oh_member.access_token = data['access_token']
+            oh_member.refresh_token = data['refresh_token']
+            oh_member.token_expires = OpenHumansMember.get_expiration(
+                data['expires_in'])
+        except cls.DoesNotExist:
+            oh_member = cls.create(oh_id=oh_id, data=data)
+            logger.debug('Member {} created.'.format(oh_id))
+        oh_member.save()
+        return oh_member
+
+    @classmethod
+    def oh_code_to_member(cls, code):
+        """
+        Exchange code for token, use this to create and return
+        OpenHumansMember. If a matching OpenHumansMember already exists in db,
+        update and return it.
+        """
+        if not code:
+            raise ValueError("'code' parameter empty or not provided")
+        params = {
+            'client_id': OPENHUMANS_CLIENT_ID,
+            'client_secret': OPENHUMANS_CLIENT_SECRET,
+            'code': code,
+            'base_url': OPENHUMANS_OH_BASE_URL,
+        }
+        params['redirect_uri'] = get_redirect_uri()
+        data = ohapi.api.oauth2_token_exchange(**params)
+        if 'error' in data:
+            raise OpenHumansAPIResponseError(
+                'Error in token exchange: {}'.format(data))
+
+        if 'access_token' in data:
+            return cls.get_create_member(data)
+        else:
+            raise OpenHumansAPIResponseError(
+                'Neither token nor error info in Open Humans API response.')
+
     def __str__(self):
         return "<OpenHumansMember(oh_id='{}')>".format(
             self.oh_id)
 
     def get_access_token(self,
-                         client_id=settings.OPENHUMANS_CLIENT_ID,
-                         client_secret=settings.OPENHUMANS_CLIENT_SECRET):
+                         client_id=OPENHUMANS_CLIENT_ID,
+                         client_secret=OPENHUMANS_CLIENT_SECRET):
         """
         Return access token. Refresh first if necessary.
 
@@ -88,6 +153,7 @@ class OpenHumansMember(models.Model):
             Project info can be found at
             https://www.openhumans.org/direct-sharing/projects/manage/
         """
+        # Also refresh if nearly expired (less than 60s remaining).
         delta = timedelta(seconds=60)
         if arrow.get(self.token_expires) - delta < arrow.now():
             self._refresh_tokens(client_id=client_id,
@@ -106,7 +172,7 @@ class OpenHumansMember(models.Model):
             https://www.openhumans.org/direct-sharing/projects/manage/
         """
         response = requests.post(
-            urljoin(OH_BASE_URL, '/oauth2/token/'),
+            urljoin(OPENHUMANS_OH_BASE_URL, '/oauth2/token/'),
             data={
                 'grant_type': 'refresh_token',
                 'refresh_token': self.refresh_token},

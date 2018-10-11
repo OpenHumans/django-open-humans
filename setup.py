@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import find_packages, setup
 import sys
 
 
@@ -26,7 +26,7 @@ setup(
     description='Django module for interacting with Open Humans',
     long_description=readme(),
 
-    version='0.1.2',
+    version='0.1.2.1',
 
     license='MIT',
 
@@ -45,7 +45,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ],
 
-    packages=['openhumans'],
+    packages=find_packages(),
 
     install_requires=install_requires,
 )

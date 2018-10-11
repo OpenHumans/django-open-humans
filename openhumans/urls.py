@@ -9,5 +9,6 @@ urlpatterns = [
         views.DeleteFile.as_view(), name='delete_file'),
     url(r'^delete_all_files/?$', views.DeleteAllFiles.as_view(),
         name='delete_all_files'),
-    url(r'^complete/?$', views.complete, name='complete')
+    url(r'^complete/?$', views.complete, name='complete'),
+    url(r'^deauth/?$', views.deauth, name='deauth'),
 ]

@@ -1,12 +1,16 @@
+import json
 from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib.auth import login
+from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import OpenHumansMember
 from .settings import openhumans_settings
+from .signals import member_deauth
 
 OPENHUMANS_OH_BASE_URL = openhumans_settings['OPENHUMANS_OH_BASE_URL']
 OH_API_BASE = urljoin(OPENHUMANS_OH_BASE_URL, '/api/direct-sharing')
@@ -31,13 +35,29 @@ def complete(request):
     """
     Receive user from Open Humans. Store data, start data upload task.
     """
-    # logger.debug("Received user returning from Open Humans.")
-
     login_member(request)
     if not request.user.is_authenticated:
         return redirect(openhumans_settings['OPENHUMANS_LOGOUT_REDIRECT_URL'])
     else:
         return redirect(openhumans_settings['OPENHUMANS_LOGIN_REDIRECT_URL'])
+
+
+@csrf_exempt
+def deauth(request):
+    """
+    Receive and act on deauthorization notification from Open Humans.
+    """
+    if request.method == 'POST':
+        json_str = json.loads(request.body.decode('utf-8'))
+        deauth_data = json.loads(json_str)
+        oh_member = OpenHumansMember.objects.get(
+            oh_id=deauth_data['project_member_id'])
+        member_deauth.send(
+            sender=OpenHumansMember,
+            open_humans_member=oh_member,
+            erasure_requested=deauth_data['erasure_requested'])
+        return HttpResponse('Received')
+    return HttpResponseNotAllowed()
 
 
 class DeleteFile(View):

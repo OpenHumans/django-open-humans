@@ -26,7 +26,7 @@ setup(
     description='Django module for interacting with Open Humans',
     long_description=readme(),
 
-    version='0.1.0',
+    version='0.1.1',
 
     license='MIT',
 

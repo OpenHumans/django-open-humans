@@ -1,5 +1,7 @@
 include LICENSE
 include README.rst
+include openhumans/*.py
+include openhumans/migrations/*.py
 recursive-include openhumans/static *
 recursive-include openhumans/templates *
 recursive-include docs *

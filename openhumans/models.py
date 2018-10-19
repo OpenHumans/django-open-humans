@@ -60,7 +60,8 @@ class OpenHumansMember(models.Model):
         if OPENHUMANS_CLIENT_ID:
             auth_url = ohapi.api.oauth2_auth_url(
                 client_id=OPENHUMANS_CLIENT_ID,
-                redirect_uri=get_redirect_uri())
+                redirect_uri=get_redirect_uri(),
+                base_url=OPENHUMANS_OH_BASE_URL)
         else:
             auth_url = ''
         return auth_url
@@ -95,7 +96,8 @@ class OpenHumansMember(models.Model):
         and return an oh_member object
         '''
         oh_id = ohapi.api.exchange_oauth2_member(
-            access_token=data['access_token'])['project_member_id']
+            access_token=data['access_token'],
+            base_url=OPENHUMANS_OH_BASE_URL)['project_member_id']
         try:
             oh_member = cls.objects.get(oh_id=oh_id)
             logger.debug('Member {} re-authorized.'.format(oh_id))

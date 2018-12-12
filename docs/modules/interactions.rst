@@ -81,7 +81,7 @@ function it will delete all files with a given name if there is more than one!**
 
   ### Delete all files of a member
 
-  In [4]: oh_member.delete_all_files()
+  In [5]: oh_member.delete_all_files()
 
 
 Uploading files for an ``OpenHumansMember`` object

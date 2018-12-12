@@ -3,13 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Django-Openhumans's documentation!
+django-open-humans
 =============================================
+
+``django-open-humans`` is a self-contained application for the `Django web framework <https://www.djangoproject.com/>`_.
+
+This app includes the models & views needed to do social logins through `Open Humans <https://www.openhumans.org/>`_
+as well as capabilities to message members and access/delete/upload files for them. It manages the *Oauth2* procedure and token refreshes.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   modules/introduction
+   modules/getting-started
    modules/views
    modules/models
 

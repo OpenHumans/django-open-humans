@@ -14,12 +14,10 @@
 #
 import os
 import sys
+
 import django
-
 sys.path.insert(0, os.path.abspath('..'))
-
 from django.conf import settings
-
 settings.configure(
     INSTALLED_APPS = [
         'django.contrib.contenttypes',
@@ -27,7 +25,6 @@ settings.configure(
         'openhumans'
     ]
 )
-
 #settings.configure()
 settings.OPENHUMANS_OH_BASE_URL = "OPENHUMANS_OH_BASE_URL"
 settings.OPENHUMANS_APP_BASE_URL = "OPENHUMANS_APP_BASE_URL"
@@ -35,17 +32,17 @@ settings.OPENHUMANS_CLIENT_ID = "OPENHUMANS_CLIENT_ID"
 settings.OPENHUMANS_CLIENT_SECRET = "OPENHUMANS_CLIENT_SECRET"
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
 #os.environ["OPENHUMANS_OH_BASE_URL"] =  "OPENHUMANS_OH_BASE_URL"
-
 django.setup()
-
 # sys.path.insert(0, os.path.abspath('.'))
+
+sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'Django-Openhumans'
-copyright = '2018, Tarannum Khan'
-author = 'Tarannum Khan'
+project = 'django-open-humans'
+copyright = '2018, Tarannum Khan, Mad Price Ball & Bastian Greshake Tzovaras'
+author = 'Tarannum Khan, Mad Price Ball, Bastian Greshake Tzovaras'
 
 # The short X.Y version
 version = ''
@@ -99,7 +96,9 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+#html_theme = 'alabaster'
+
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

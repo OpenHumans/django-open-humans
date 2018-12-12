@@ -1,4 +1,7 @@
-Models
-======
+.. _model-ref:
+#########
+models.py
+#########
+
 .. automodule:: openhumans.models
   :members:

@@ -12,6 +12,7 @@ def readme():
 # Add backport of futures unless Python version is 3.2 or later.
 install_requires = [
     'open-humans-api>=0.2.4',
+    'django>=2.1'
 ]
 if sys.version_info < (3, 5):
     raise RuntimeError("This package requres Python 3.5+")
@@ -26,7 +27,7 @@ setup(
     description='Django module for interacting with Open Humans',
     long_description=readme(),
 
-    version='0.1.2.2',
+    version='0.1.2.3',
 
     license='MIT',
 

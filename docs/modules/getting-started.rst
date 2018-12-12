@@ -54,3 +54,34 @@ the ``INSTALLED_APPS`` of our Django project:
         'django.contrib.staticfiles',
         'openhumans'
     ]
+
+Before we can run make and run the migrations we need to add some environment variables that
+``django-open-humans`` needs to properly work. At a minimum we need to set up the ``OPENHUMANS_APP_BASE_URL``,
+``OPENHUMANS_CLIENT_ID`` and ``OPENHUMANS_CLIENT_SECRET``. To do so we add a few lines to our ``settings.py``:
+
+.. code-block:: Python
+  :caption: our_project/our_project/settings.py
+  :lineno-start: 13
+
+  import os
+
+  OPENHUMANS_APP_BASE_URL = os.getenv('OPENHUMANS_APP_BASE_URL', http://localhost:5000')
+  OPENHUMANS_CLIENT_ID = os.getenv('OPENHUMANS_CLIENT_ID', 'your_client_id')
+  OPENHUMANS_CLIENT_SECRET = os.getenv('OPENHUMANS_CLIENT_SECRET', 'your_client_secret')
+
+
+This code reads the ``OPENHUMANS_APP_BASE_URL``,
+``OPENHUMANS_CLIENT_ID`` and ``OPENHUMANS_CLIENT_SECRET`` from the correspondingly named environment variables
+you should set using e.g. ``export OPENHUMANS_CLIENT_SECRET='my_client_secret'``.
+
+To get your own ``client_id`` and ``client_secret`` you can
+`head to Open Humans <https://www.openhumans.org/direct-sharing/projects/manage/>`_
+and make your own data request project.
+
+Now we can migrate our tables. Those migrations will create the ``User`` and ``OpenHumansMember`` tables for us:
+
+.. code-block:: shell
+
+  ./manage.py migrate
+
+And that's all to get the basic configuration and integration into your Django project done.

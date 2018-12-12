@@ -37,4 +37,20 @@ and starts the new virtual environment. With this we start a new django project:
 Setting up ``django-open-humans``
 =================================
 
-Now that we have setup 
+Now that we have installed everything we can get started to add ``django-open-humans`` to
+the ``INSTALLED_APPS`` of our Django project:
+
+.. code-block:: python
+   :lineno-start: 33
+   :caption: our_project/our_project/settings.py
+   :emphasize-lines: 8
+
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'openhumans'
+    ]

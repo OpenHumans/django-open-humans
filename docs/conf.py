@@ -41,8 +41,8 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'django-open-humans'
-copyright = '2018, Tarannum Khan & Bastian Greshake Tzovaras'
-author = 'Tarannum Khan, Bastian Greshake Tzovaras'
+copyright = '2018, Tarannum Khan, Mad Price Ball & Bastian Greshake Tzovaras'
+author = 'Tarannum Khan, Mad Price Ball, Bastian Greshake Tzovaras'
 
 # The short X.Y version
 version = ''

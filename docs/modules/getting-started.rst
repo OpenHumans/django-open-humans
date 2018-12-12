@@ -76,7 +76,7 @@ you should set using e.g. ``export OPENHUMANS_CLIENT_SECRET='my_client_secret'``
 
 To get your own ``client_id`` and ``client_secret`` you can
 `head to Open Humans <https://www.openhumans.org/direct-sharing/projects/manage/>`_
-and make your own data request project.
+and make your own OAuth2 data request project.
 
 Now we can migrate our tables. Those migrations will create the ``User`` and ``OpenHumansMember`` tables for us:
 
@@ -85,3 +85,21 @@ Now we can migrate our tables. Those migrations will create the ``User`` and ``O
   ./manage.py migrate
 
 And that's all to get the basic configuration and integration into your Django project done.
+
+
+Setting up your Open Humans project
+===================================
+
+For the login with *Open Humans* to work you need to correctly configure the ``REDIRECT_URL``
+of the OAuth2 process on Open Humans. The URL path that ``django-open-humans`` creates for redirects is
+
+.. code-block:: python
+
+  /openhumans/complete
+
+This means if you want to develop locally and
+your ``OPENHUMANS_APP_BASE_URL`` is ``http://localhost:5000``, your *Redirect URL* should be
+``http://localhost:5000/openhumans/complete``.
+
+Similarly, there is a deauthorization hook that you can setup on *Open Humans* which will automatically inform you
+when people have de-authorized your application. ``django-open-humans`` accepts deauthorization requests at ``/openhumans/deauth``.

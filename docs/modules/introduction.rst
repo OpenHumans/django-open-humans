@@ -26,7 +26,7 @@ Features
 * Provide a hook to automatically delete data from members that de-authorize you on Open Humans
 
 Example use cases
-=======
+=================
 
 This library has been used in a variety of projects that interface with Open Humans. Here are some examples:
 

@@ -33,3 +33,11 @@ This library has been used in a variety of projects that interface with Open Hum
 * `Personal API <https://tzovar.as/a-personal-api/>`_
 * `Fitbit Intraday Access <https://github.com/openhumans/oh-fitbit-intraday>`_
 * `Google Fit Integration <https://github.com/carolinux/oh-googlefit>`_
+
+
+Getting in touch
+================
+
+Our `code is on GitHub <https://github.com/OpenHumans/django-open-humans>`_ and we are always
+happy about code & documentation contributions as well as bug reports! To get in touch more directly
+you can `join us on Slack <http://slackin.openhumans.org>`_!

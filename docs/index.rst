@@ -17,6 +17,7 @@ as well as capabilities to message members and access/delete/upload files for th
 
    modules/introduction
    modules/getting-started
+   modules/interactions
    modules/views
    modules/models
 

@@ -92,7 +92,7 @@ will have to provide an open stream (text or binary), a file name that should be
 
 
 .. code-block:: Python
-  :caption: ./views.py
+  :caption: views.py
 
   def upload_file(request):
     oh_member = request.user.openhumansmember

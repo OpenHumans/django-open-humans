@@ -43,14 +43,14 @@ a different URL.
 
 Specifies where a user should be redirected to after they have logged in into
 your app with their Open Humans account. By default
-``OPENHUMANS_LOGIN_REDIRECT_URL`` should link to `/`.
+``OPENHUMANS_LOGIN_REDIRECT_URL`` should link to ``/``.
 
 ``OPENHUMANS_LOGOUT_REDIRECT_URL``
 ----------------------------------
 
 Specifies where a user should be redirected to after they have logged out of
 your app with their Open Humans account. By default
-``OPENHUMANS_LOGOUT_REDIRECT_URL`` should link to `/`.
+``OPENHUMANS_LOGOUT_REDIRECT_URL`` should link to ``/``.
 
 
 ``OPENHUMANS_DELETE_ON_ERASURE``

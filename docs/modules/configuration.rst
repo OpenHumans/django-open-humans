@@ -46,7 +46,7 @@ your app with their Open Humans account. By default
 ``OPENHUMANS_LOGIN_REDIRECT_URL`` should link to `/`.
 
 ``OPENHUMANS_LOGOUT_REDIRECT_URL``
----------------------------------
+----------------------------------
 
 Specifies where a user should be redirected to after they have logged out of
 your app with their Open Humans account. By default
@@ -56,9 +56,22 @@ your app with their Open Humans account. By default
 ``OPENHUMANS_DELETE_ON_ERASURE``
 --------------------------------
 
+If you have set up the deauthorization hook on Open Humans the
+``OPENHUMANS_DELETE_ON_ERASURE`` will specify how an incoming request from
+this hook will be processed. If set to ``True`` an ``OpenHumansMember``
+object will be only deleted if the user requested to do so.
+
+**By setting this option to** ``False`` **member objects will not be deleted, even
+if they requested it.**
+
 Default: ``True``.
 
 ``OPENHUMANS_DELETE_ON_DEAUTH``
 --------------------------------
+
+If you have set up the deauthorization hook on Open Humans the
+``OPENHUMANS_DELETE_ON_DEAUTH`` will specify how an incoming request from
+this hook will be processed. If set to ``True`` an ``OpenHumansMember``
+object will always be deleted, even if the member did not request this deletion.
 
 Default: ``False``.

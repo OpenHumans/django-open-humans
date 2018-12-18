@@ -34,6 +34,8 @@ and starts the new virtual environment. With this we start a new django project:
   django-admin startproject our_project .
 
 
+.. _setting-up:
+
 Setting up ``django-open-humans``
 =================================
 

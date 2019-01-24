@@ -67,7 +67,7 @@ Before we can run make and run the migrations we need to add some environment va
 
   import os
 
-  OPENHUMANS_APP_BASE_URL = os.getenv('OPENHUMANS_APP_BASE_URL', http://localhost:5000')
+  OPENHUMANS_APP_BASE_URL = os.getenv('OPENHUMANS_APP_BASE_URL', 'http://localhost:5000')
   OPENHUMANS_CLIENT_ID = os.getenv('OPENHUMANS_CLIENT_ID', 'your_client_id')
   OPENHUMANS_CLIENT_SECRET = os.getenv('OPENHUMANS_CLIENT_SECRET', 'your_client_secret')
 

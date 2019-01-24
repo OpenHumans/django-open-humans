@@ -90,7 +90,7 @@ class OpenHumansMember(models.Model):
         return oh_member
 
     @classmethod
-    def get_create_member(cls, data):
+    def get_create_member(cls, data, user=None):
         '''
         use the data returned by `ohapi.api.oauth2_token_exchange`
         and return an oh_member object
@@ -106,7 +106,7 @@ class OpenHumansMember(models.Model):
             oh_member.token_expires = OpenHumansMember.get_expiration(
                 data['expires_in'])
         except cls.DoesNotExist:
-            oh_member = cls.create(oh_id=oh_id, data=data)
+            oh_member = cls.create(oh_id=oh_id, data=data, user=user)
             logger.debug('Member {} created.'.format(oh_id))
         oh_member.save()
         return oh_member

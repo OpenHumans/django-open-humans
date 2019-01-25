@@ -39,6 +39,9 @@ and starts the new virtual environment. With this we start a new django project:
 Setting up ``django-open-humans``
 =================================
 
+Set up ``settings.py``
+----------------------
+
 Now that we have installed everything we can get started to add ``django-open-humans`` to
 the ``INSTALLED_APPS`` of our Django project:
 
@@ -67,7 +70,7 @@ Before we can run make and run the migrations we need to add some environment va
 
   import os
 
-  OPENHUMANS_APP_BASE_URL = os.getenv('OPENHUMANS_APP_BASE_URL', http://localhost:5000')
+  OPENHUMANS_APP_BASE_URL = os.getenv('OPENHUMANS_APP_BASE_URL', 'http://localhost:5000')
   OPENHUMANS_CLIENT_ID = os.getenv('OPENHUMANS_CLIENT_ID', 'your_client_id')
   OPENHUMANS_CLIENT_SECRET = os.getenv('OPENHUMANS_CLIENT_SECRET', 'your_client_secret')
 
@@ -79,6 +82,34 @@ you should set using e.g. ``export OPENHUMANS_CLIENT_SECRET='my_client_secret'``
 To get your own ``client_id`` and ``client_secret`` you can
 `head to Open Humans <https://www.openhumans.org/direct-sharing/projects/manage/>`_
 and make your own OAuth2 data request project.
+
+
+Set up ``urls.py``
+------------------
+
+To add django-open-humans URLs to your project, update your root ``urls.py`` configuration
+file (i.e. the file specified by ``settings.ROOT_URLCONF``) as follows:
+
+.. code-block:: python
+   :lineno-start: 1
+   :caption: our_project/our_project/urls.py
+   :emphasize-lines: 9-11
+
+   from django.contrib import admin
+   from django.urls import include, path
+
+   urlpatterns = [
+       path('', include('main.urls')),
+       path('admin/', admin.site.urls),
+   ]
+
+   urlpatterns += [
+       path('openhumans/', include('openhumans.urls')),
+   ]
+
+
+Run database migrations
+-----------------------
 
 Now we can migrate our tables. Those migrations will create the ``User`` and ``OpenHumansMember`` tables for us:
 

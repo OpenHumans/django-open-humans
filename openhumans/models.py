@@ -217,11 +217,18 @@ class OpenHumansMember(models.Model):
         :param file_basename: This field is the file basename of the file to
             be deleted. It's default value is None.
         """
-        if(file_id and file_basename):
+        if file_id:
+            try:
+                file_id = int(file_id)
+            except ValueError:
+                raise ValueError(
+                    "The 'file_id' should be an integer. (Did you try to "
+                    "use 'file_basename' without specifying the parameter?)")
+        if (file_id and file_basename):
             raise ValidationError("Only one of the following must be " +
                                   "specified file_id or file_basename not both"
                                   )
-        if(not file_id and not file_basename):
+        if (not file_id and not file_basename):
             raise ValidationError("Either file_id or file_basename must be " +
                                   "specified")
         ohapi.api.delete_files(

@@ -199,7 +199,8 @@ class OpenHumansMember(models.Model):
     def list_files(self):
         """List files."""
         data = ohapi.api.exchange_oauth2_member(
-                                    access_token=self.get_access_token())
+                                    access_token=self.get_access_token(),
+                                    base_url=OPENHUMANS_OH_BASE_URL)
         return data['data']
 
     def upload(self, stream, filename, metadata, file_identifier=None):
@@ -207,7 +208,8 @@ class OpenHumansMember(models.Model):
         ohapi.api.upload_stream(stream=stream, filename=filename,
                                 metadata=metadata,
                                 access_token=self.get_access_token(),
-                                file_identifier=file_identifier)
+                                file_identifier=file_identifier,
+                                base_url=OPENHUMANS_OH_BASE_URL)
 
     def delete_single_file(self, file_id=None, file_basename=None):
         """

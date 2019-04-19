@@ -198,10 +198,16 @@ class OpenHumansMember(models.Model):
 
     def list_files(self):
         """List files."""
+        return_data = []
         data = ohapi.api.exchange_oauth2_member(
                                     access_token=self.get_access_token(),
                                     base_url=OPENHUMANS_OH_BASE_URL)
-        return data['data']
+        return_data += data['data']
+        while data['next']:
+            response = requests.get(data['next'])
+            data = response.json()
+            return_data += data['data']
+        return return_data
 
     def upload(self, stream, filename, metadata, file_identifier=None):
         """Upload file to Open Humans."""

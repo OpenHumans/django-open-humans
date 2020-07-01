@@ -60,9 +60,11 @@ def deauth(request):
                     msg=json_payload,
                     digestmod='sha1').hexdigest()
                 if sig != expected:
-                    raise PermissionDenied('X-Openhumans-Webhooks-Signature failed to verify payload.')
+                    raise PermissionDenied('X-Openhumans-Webhooks-Signature '
+                                           'failed to verify payload.')
             else:
-                raise PermissionDenied('X-Openhumans-Webhooks-Signature not present.')
+                raise PermissionDenied(
+                    'X-Openhumans-Webhooks-Signature not present.')
 
         deauth_data = json.loads(json_payload.decode('utf-8'))
         oh_member = OpenHumansMember.objects.get(

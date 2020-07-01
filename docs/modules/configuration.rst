@@ -75,3 +75,14 @@ this hook will be processed. If set to ``True`` an ``OpenHumansMember``
 object will always be deleted, even if the member did not request this deletion.
 
 Default: ``False``.
+
+``OPENHUMANS_WEBHOOK_SECRET``
+-----------------------------
+
+If you have set a "webhook secret" for your activity, set this to that
+string to verify incoming requests are from Open Humans. If this is set and
+the expected verification header (``X-Openhumans-Webhooks-Signature``) is not
+present or invalid, the request will result in a PermissionDenied error. If
+this is NOT set, this header (if included) will NOT be checked.
+
+Default: ``None``.

@@ -1,8 +1,10 @@
+import hmac
 import json
 from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib.auth import login
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.views import View
@@ -13,6 +15,7 @@ from .settings import openhumans_settings
 from .signals import member_deauth
 
 OPENHUMANS_OH_BASE_URL = openhumans_settings['OPENHUMANS_OH_BASE_URL']
+OPENHUMANS_WEBHOOK_SECRET = openhumans_settings['OPENHUMANS_WEBHOOK_SECRET']
 OH_API_BASE = urljoin(OPENHUMANS_OH_BASE_URL, '/api/direct-sharing')
 
 
@@ -48,8 +51,20 @@ def deauth(request):
     Receive and act on deauthorization notification from Open Humans.
     """
     if request.method == 'POST':
-        json_str = json.loads(request.body.decode('utf-8'))
-        deauth_data = json.loads(json_str)
+        json_payload = request.body
+        if OPENHUMANS_WEBHOOK_SECRET:
+            if 'X-Openhumans-Webhooks-Signature' in request.headers:
+                sig = request.headers['X-Openhumans-Webhooks-Signature']
+                expected = "sha1=" + hmac.new(
+                    key=OPENHUMANS_WEBHOOK_SECRET.encode('utf-8'),
+                    msg=json_payload,
+                    digestmod='sha1').hexdigest()
+                if sig != expected:
+                    raise PermissionDenied('X-Openhumans-Webhooks-Signature failed to verify payload.')
+            else:
+                raise PermissionDenied('X-Openhumans-Webhooks-Signature not present.')
+
+        deauth_data = json.loads(json_payload.decode('utf-8'))
         oh_member = OpenHumansMember.objects.get(
             oh_id=deauth_data['project_member_id'])
         member_deauth.send(

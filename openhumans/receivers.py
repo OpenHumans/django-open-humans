@@ -48,6 +48,10 @@ def handle_deauth(sender, open_humans_member, erasure_requested, **kwargs):
         except Exception as error:
             if settings.DEBUG:
                 raise error
+    else:
+        # Note that member has deauthorized, but data remains.
+        open_humans_member.oh_deauth = True
+        open_humans_member.save()
 
 
 @receiver(pre_delete, sender=OpenHumansMember)

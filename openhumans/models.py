@@ -1,6 +1,7 @@
 from datetime import timedelta
 import logging
 from urllib.parse import urljoin
+import warnings
 
 import arrow
 from django.contrib.auth import get_user_model
@@ -49,6 +50,7 @@ class OpenHumansMember(models.Model):
     refresh_token = models.CharField(max_length=256)
     token_expires = models.DateTimeField()
     public = models.BooleanField(default=False)
+    oh_deauth = models.BooleanField(default=False)
 
     @staticmethod
     def get_expiration(expires_in):
@@ -155,6 +157,9 @@ class OpenHumansMember(models.Model):
             Project info can be found at
             https://www.openhumans.org/direct-sharing/projects/manage/
         """
+        if self.oh_deauth:
+            warnings.warn(
+                'OpenHumansMember {} is deauthorized!'.format(self.oh_id))
         # Also refresh if nearly expired (less than 60s remaining).
         delta = timedelta(seconds=60)
         if arrow.get(self.token_expires) - delta < arrow.now():

@@ -1,14 +1,24 @@
+from urllib.parse import urljoin
+
+import requests
+
 from django.conf import settings
+from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
+from .models import OpenHumansMember
 from .settings import openhumans_settings
 from .signals import member_deauth
+
+OPENHUMANS_DEAUTH_ON_DELETE = openhumans_settings['OPENHUMANS_DEAUTH_ON_DELETE']
 
 OPENHUMANS_DELETE_ON_ERASURE = openhumans_settings[
     'OPENHUMANS_DELETE_ON_ERASURE']
 
 OPENHUMANS_DELETE_ON_DEAUTH = openhumans_settings[
     'OPENHUMANS_DELETE_ON_DEAUTH']
+
+OPENHUMANS_OH_BASE_URL = openhumans_settings['OPENHUMANS_OH_BASE_URL']
 
 
 @receiver(member_deauth)
@@ -38,3 +48,19 @@ def handle_deauth(sender, open_humans_member, erasure_requested, **kwargs):
         except Exception as error:
             if settings.DEBUG:
                 raise error
+
+
+@receiver(pre_delete, sender=OpenHumansMember)
+def deauth_on_delete(**kwargs):
+    """
+    Deauthorize on Open Humans before deleting locally.
+    """
+    if OPENHUMANS_DEAUTH_ON_DELETE:
+        instance = kwargs['instance']
+        withdraw_url = urljoin(
+            OPENHUMANS_OH_BASE_URL,
+            '/api/direct-sharing/project/remove-members/')
+        withdraw_url = urljoin(
+            withdraw_url,
+            '?access_token={}'.format(instance.get_access_token()))
+        requests.post(withdraw_url)

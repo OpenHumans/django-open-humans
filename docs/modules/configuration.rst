@@ -52,6 +52,14 @@ Specifies where a user should be redirected to after they have logged out of
 your app with their Open Humans account. By default
 ``OPENHUMANS_LOGOUT_REDIRECT_URL`` should link to ``/``.
 
+``OPENHUMANS_DEAUTH_ON_DELETE``
+-------------------------------
+
+If an OpenHumansMember object is deleted (e.g. via "delete account"), send
+a POST to the Open Humans API to "withdraw" (deauthorize) this member of
+the activity on the Open Humans site.
+
+Default: ``True``.
 
 ``OPENHUMANS_DELETE_ON_ERASURE``
 --------------------------------

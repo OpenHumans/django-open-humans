@@ -8,5 +8,4 @@ member_deauth: Sent when the 'deauth' webhook URL is called by Open Humans,
 import django.dispatch
 
 
-member_deauth = django.dispatch.Signal(providing_args=[
-    "open_humans_member", "erasure_requested"])
+member_deauth = django.dispatch.Signal()

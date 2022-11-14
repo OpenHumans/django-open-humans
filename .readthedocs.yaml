@@ -5,6 +5,12 @@ build:
   tools:
     python: "3.8"
 
- install:
+python:
+  version: "3.8"
+  install:
     - method: pip
       path: .
+
+sphinx:
+  builder: html
+  configuration: conf.py

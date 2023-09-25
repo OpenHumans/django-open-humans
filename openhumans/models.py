@@ -255,3 +255,21 @@ class OpenHumansMember(models.Model):
             project_member_id=self.oh_id,
             access_token=self.get_access_token(),
             all_files=True)
+
+    def deauth(self):
+        """
+        Deauthorize the OpenHumans account.
+
+        This does not delete the account locally. If access is needed to the
+        OpenHumans functionality associated with the account after this call
+        the ``OpenHumansMember`` would need to be re-authorized.
+
+        See also: :ref:`OPENHUMANS_DELETE_ON_DEAUTH`
+        """
+        withdraw_url = urljoin(
+            OPENHUMANS_OH_BASE_URL,
+            '/api/direct-sharing/project/remove-members/')
+        withdraw_url = urljoin(
+            withdraw_url,
+            '?access_token={}'.format(self.get_access_token()))
+        requests.post(withdraw_url)

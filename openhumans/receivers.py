@@ -61,10 +61,4 @@ def deauth_on_delete(**kwargs):
     """
     if OPENHUMANS_DEAUTH_ON_DELETE:
         instance = kwargs['instance']
-        withdraw_url = urljoin(
-            OPENHUMANS_OH_BASE_URL,
-            '/api/direct-sharing/project/remove-members/')
-        withdraw_url = urljoin(
-            withdraw_url,
-            '?access_token={}'.format(instance.get_access_token()))
-        requests.post(withdraw_url)
+        instance.deauth()
